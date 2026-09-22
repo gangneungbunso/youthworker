@@ -359,6 +359,13 @@
   <!-- SCREEN 4: FINAL -->
   <section class="screen" id="screen-final">
     <h2>🎉 오늘의 행운거북이!</h2>
+
+    <div class="type-card" id="finalTypeCard" style="margin-bottom:20px;">
+      <div class="type-eyebrow">나의 청소년지도사 유형은</div>
+      <div class="type-name" id="finalTypeName">유형 이름</div>
+      <p class="type-desc" id="finalTypeDesc">유형 설명</p>
+    </div>
+
     <p class="lead">테스트 결과로 만난 거북이 4마리예요. 채널 추가 선물 2마리는 부스에서 원하는 색으로 골라가세요.</p>
     <div class="final-grid" id="finalGrid"></div>
 
@@ -650,6 +657,13 @@ function completeChannelAdd(){
   logCompletion();
 
   setTimeout(()=>{
+    const primary = sortedColors[0];
+    const type = TYPES[primary];
+    const finalTypeCard = document.getElementById('finalTypeCard');
+    finalTypeCard.style.setProperty('--type-color', TURTLES[primary].color);
+    document.getElementById('finalTypeName').textContent = type.name;
+    document.getElementById('finalTypeDesc').textContent = type.desc;
+
     const finalGrid = document.getElementById('finalGrid');
     finalGrid.innerHTML = '';
     sortedColors.slice(0,4).forEach((key,i)=>{
