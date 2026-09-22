@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>행운거북이 찾기 | 청소년지도사 유형 테스트</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#FBF8F1;
+    --ink:#233A2E;
+    --ink-soft:#5C6E62;
+    --line:#DDE5DA;
+    --surface:#FFFFFF;
+
+    --green:#3E9C6B;   --green-soft:#DFF3E6;
+    --red:#E15B3F;     --red-soft:#FBE2DA;
+    --pink:#EC5F94;    --pink-soft:#FBE1EC;
+    --yellow:#E9B23C;  --yellow-soft:#FAECCB;
+    --brown:#8B5E3C;   --brown-soft:#EEE2D4;
+    --blue:#3E7CB8;    --blue-soft:#DEEAF5;
+
+    --bg:var(--cream);
+    --text:var(--ink);
+    --text-soft:var(--ink-soft);
+    --card:var(--surface);
+    --border:var(--line);
+
+    --radius-lg:28px;
+    --radius-md:18px;
+    --font-head:'Jua', sans-serif;
+    --font-body:'Noto Sans KR', sans-serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#132018;
+      --text:#EFF5EF;
+      --text-soft:#9FB4A6;
+      --card:#1B2C22;
+      --border:#2C4034;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#132018;
+    --text:#EFF5EF;
+    --text-soft:#9FB4A6;
+    --card:#1B2C22;
+    --border:#2C4034;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-padding-top:env(safe-area-inset-top,0px);}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    font-family:var(--font-body);
+    background:var(--bg);
+    color:var(--text);
+    padding-top:env(safe-area-inset-top,0px);
+    padding-bottom:env(safe-area-inset-bottom,0px);
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+
+  /* shell-scute decorative backdrop */
+  .shellfield{
+    position:fixed; inset:0; z-index:0; pointer-events:none;
+    background-image:
+      radial-gradient(circle at 12% 18%, var(--green-soft) 0 60px, transparent 61px),
+      radial-gradient(circle at 85% 12%, var(--pink-soft) 0 70px, transparent 71px),
+      radial-gradient(circle at 90% 78%, var(--blue-soft) 0 80px, transparent 81px),
+      radial-gradient(circle at 8% 82%, var(--yellow-soft) 0 65px, transparent 66px),
+      radial-gradient(circle at 50% 95%, var(--brown-soft) 0 50px, transparent 51px);
+    opacity:.55;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]) .shellfield{opacity:.12;}
+  }
+
+  .wrap{
+    position:relative; z-index:1;
+    max-width:480px; margin:0 auto;
+    min-height:100%;
+    padding:20px 20px calc(28px + env(safe-area-inset-bottom,0px));
+    display:flex; flex-direction:column;
+  }
+
+  .topbar{
+    display:flex; align-items:center; gap:10px;
+    padding:6px 2px 18px;
+    color:var(--text-soft); font-size:13px; line-height:1.4;
+  }
+  .topbar .badge{
+    width:34px; height:34px; border-radius:50%;
+    background:var(--green); color:#fff; display:flex; align-items:center; justify-content:center;
+    font-family:var(--font-head); font-size:17px; flex:none;
+  }
+
+  .screen{display:none;}
+  .screen.active{display:block; animation:rise .5s ease both;}
+  @keyframes rise{from{opacity:0; transform:translateY(14px);} to{opacity:1; transform:translateY(0);}}
+  @media (prefers-reduced-motion: reduce){ .screen.active{animation:none;} }
+
+  h1{
+    font-family:var(--font-head); font-weight:400;
+    font-size:30px; line-height:1.35; margin:0 0 12px;
+  }
+  h2{
+    font-family:var(--font-head); font-weight:400;
+    font-size:23px; line-height:1.35; margin:0 0 10px;
+  }
+  p{font-size:15.5px; line-height:1.65; color:var(--text-soft); margin:0 0 14px;}
+  .lead{color:var(--text); font-size:16.5px;}
+
+  .btn{
+    appearance:none; border:none; cursor:pointer;
+    font-family:var(--font-body); font-weight:700; font-size:16px;
+    padding:16px 20px; border-radius:100px;
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    width:100%;
+  }
+  .btn-primary{background:var(--green); color:#fff;}
+  .btn-primary:active{transform:scale(.98);}
+  .btn-outline{background:transparent; color:var(--text); border:2px solid var(--border);}
+  .btn-kakao{background:#FEE500; color:#391B1B;}
+  .btn-ghost{background:none; color:var(--text-soft); font-weight:500; font-size:14px; padding:10px;}
+
+  /* ---- intro ---- */
+  .hero-turtle{margin:6px 0 18px; display:flex; justify-content:center;}
+  .center-name{font-size:13px; color:var(--text-soft); margin-bottom:4px;}
+  .event-tag{
+    display:inline-block; background:var(--yellow-soft); color:#7A5A16;
+    border-radius:100px; padding:5px 14px; font-size:12.5px; font-weight:700; margin-bottom:14px;
+  }
+  .info-card{
+    background:var(--card); border:1px solid var(--border); border-radius:var(--radius-md);
+    padding:16px 18px; margin:18px 0; display:flex; gap:12px; align-items:flex-start;
+  }
+  .info-card .num{
+    font-family:var(--font-head); font-size:20px; color:var(--green); flex:none; width:26px;
+  }
+  .info-card .t{font-weight:700; font-size:15px; margin-bottom:2px;}
+  .info-card .d{font-size:13.5px; color:var(--text-soft); line-height:1.5;}
+
+  /* ---- quiz ---- */
+  .progress-row{display:flex; align-items:center; gap:10px; margin-bottom:22px;}
+  .progress-track{flex:1; height:8px; border-radius:100px; background:var(--border); overflow:hidden;}
+  .progress-fill{height:100%; background:var(--green); border-radius:100px; transition:width .35s ease;}
+  .progress-label{font-size:13px; color:var(--text-soft); font-weight:700; flex:none;}
+
+  .q-card{
+    background:var(--card); border:1px solid var(--border); border-radius:var(--radius-lg);
+    padding:26px 22px; margin-bottom:16px;
+  }
+  .q-num{font-size:13px; color:var(--green); font-weight:700; margin-bottom:8px;}
+  .q-text{font-size:19px; font-weight:700; line-height:1.5;}
+
+  .opt{
+    display:block; width:100%; text-align:left;
+    background:var(--card); border:2px solid var(--border); border-radius:16px;
+    padding:16px 18px; margin-bottom:12px; font-family:var(--font-body);
+    font-size:15px; color:var(--text); cursor:pointer; line-height:1.5;
+  }
+  .opt:active{border-color:var(--green); background:var(--green-soft);}
+
+  /* ---- result ---- */
+  .type-card{
+    background:var(--card); border:1px solid var(--border); border-radius:var(--radius-lg);
+    padding:24px 22px; text-align:center; margin-bottom:22px;
+  }
+  .type-eyebrow{font-size:13px; color:var(--text-soft); margin-bottom:6px;}
+  .type-name{font-family:var(--font-head); font-size:26px; margin:0 0 10px; color:var(--type-color, var(--green));}
+  .type-desc{font-size:14.5px; color:var(--text-soft); line-height:1.65; margin:0;}
+
+  .section-title{font-size:15px; font-weight:700; margin:26px 0 4px;}
+  .section-sub{font-size:13px; color:var(--text-soft); margin-bottom:16px;}
+
+  .turtle-grid{
+    display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin-bottom:8px;
+  }
+  .turtle-card{
+    background:var(--card); border:1px solid var(--border); border-radius:18px;
+    padding:16px 10px 14px; text-align:center;
+    opacity:0; transform:translateY(10px) scale(.94);
+    animation:pop .55s ease forwards;
+  }
+  .turtle-card .tv{width:56px; height:56px; margin:0 auto 8px;}
+  .turtle-card .tname{font-weight:700; font-size:14.5px; margin-bottom:3px;}
+  .turtle-card .tmeaning{font-size:11.5px; font-weight:700; letter-spacing:.02em; margin-bottom:4px;}
+  .turtle-card .tdesc{font-size:11.5px; color:var(--text-soft); line-height:1.5;}
+  @keyframes pop{to{opacity:1; transform:translateY(0) scale(1);}}
+  @media (prefers-reduced-motion: reduce){ .turtle-card{animation:none; opacity:1; transform:none;} }
+
+  .locked-card{
+    background:var(--card); border:2px dashed var(--border); border-radius:18px;
+    padding:20px 10px; text-align:center; color:var(--text-soft);
+  }
+  .locked-card .lock{font-size:22px; margin-bottom:6px;}
+  .locked-card .lt{font-size:13px; font-weight:700;}
+
+  .kakao-box{
+    background:var(--card); border:1px solid var(--border); border-radius:var(--radius-lg);
+    padding:20px; margin:22px 0 10px;
+  }
+  .kakao-box .kt{font-weight:700; font-size:15.5px; margin-bottom:6px;}
+  .kakao-box .kd{font-size:13.5px; color:var(--text-soft); margin-bottom:16px; line-height:1.6;}
+
+  .staff-note{
+    background:var(--yellow-soft); color:#6B4E10; border-radius:16px;
+    padding:14px 16px; font-size:13.5px; line-height:1.6; margin-top:18px;
+  }
+
+  .final-grid{
+    display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin:14px 0 8px;
+  }
+  .final-grid .turtle-card .tv{width:44px; height:44px;}
+  .final-grid .turtle-card{padding:12px 6px 10px;}
+  .final-grid .turtle-card .tname{font-size:12.5px;}
+  .final-grid .turtle-card .tmeaning{font-size:10px;}
+
+  .confetti-layer{position:fixed; inset:0; pointer-events:none; z-index:5; overflow:hidden;}
+  .confetti-dot{
+    position:absolute; top:-20px; width:9px; height:9px; border-radius:3px;
+    animation:fall linear forwards;
+  }
+  @keyframes fall{ to{ transform:translateY(115vh) rotate(300deg); opacity:.9; } }
+
+  .footer-space{flex:1;}
+  .stack{display:flex; flex-direction:column; gap:10px; margin-top:16px;}
+
+  /* ---- info break screens ---- */
+  .info-screen-card{
+    background:var(--card); border:1px solid var(--border); border-radius:var(--radius-lg);
+    padding:28px 22px; text-align:left; margin-bottom:18px;
+  }
+  .info-icon{font-size:34px; margin-bottom:10px;}
+  .info-bullets{margin-top:16px;}
+  .info-bullet{
+    font-size:14.5px; color:var(--text); line-height:1.6;
+    padding-left:18px; position:relative; margin-bottom:10px;
+  }
+  .info-bullet::before{
+    content:"●"; color:var(--green); position:absolute; left:0; top:7px; font-size:7px;
+  }
+  .info-note{font-size:12px; color:var(--text-soft); margin-top:14px; line-height:1.6;}
+
+  /* ---- bonus turtle picker ---- */
+  .hint{font-size:13px; color:var(--text-soft); margin:2px 0 12px;}
+</style>
+</head>
+<body>
+<div class="shellfield" aria-hidden="true"></div>
+<div class="confetti-layer" id="confettiLayer" aria-hidden="true"></div>
+
+<div class="wrap">
+
+  <div class="topbar">
+    <div class="badge">🐢</div>
+    <div>강원특별자치도청소년활동진흥센터</div>
+  </div>
+
+  <!-- SCREEN 1: INTRO -->
+  <section class="screen active" id="screen-intro">
+    <div class="event-tag">청소년지도사 유형 테스트</div>
+    <h1>나에게 맞는<br>청소년지도사 모습은?<br>행운거북이도 만나보세요</h1>
+    <p class="lead">질문 8개에 답하면 나만의 청소년지도사 유형과, 나를 닮은 행운거북이 색깔을 확인할 수 있어요.</p>
+
+    <div class="info-card">
+      <div class="num">1</div>
+      <div>
+        <div class="t">유형 테스트 참여하기</div>
+        <div class="d">8개의 질문에 솔직하게 답해주세요. 정답은 없어요, 나다운 선택이면 충분해요.</div>
+      </div>
+    </div>
+    <div class="info-card">
+      <div class="num">2</div>
+      <div>
+        <div class="t">행운거북이 4마리 뽑기</div>
+        <div class="d">답변에 따라 나를 닮은 거북이 색깔 4가지와 그 의미를 확인해요.</div>
+      </div>
+    </div>
+    <div class="info-card">
+      <div class="num">3</div>
+      <div>
+        <div class="t">채널 추가하고 2마리 더!</div>
+        <div class="d">센터 카카오톡 채널을 추가하면 숨겨진 거북이 2마리를 더 뽑을 수 있어요.</div>
+      </div>
+    </div>
+
+    <div class="stack">
+      <button class="btn btn-primary" onclick="startQuiz()">테스트 시작하기</button>
+    </div>
+  </section>
+
+  <!-- SCREEN 2: QUIZ -->
+  <section class="screen" id="screen-quiz">
+    <div class="progress-row">
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="progress-label" id="progressLabel">1 / 8</div>
+    </div>
+    <div class="q-card">
+      <div class="q-num" id="qNum">Q1</div>
+      <div class="q-text" id="qText">질문</div>
+    </div>
+    <div id="optionList"></div>
+  </section>
+
+  <!-- SCREEN 2-B: CAREER INFO BREAK -->
+  <section class="screen" id="screen-info">
+    <div class="event-tag" id="infoTag">🎓 진로 꿀팁</div>
+    <div class="info-screen-card">
+      <div class="info-icon" id="infoIcon">🎓</div>
+      <h2 id="infoTitle">제목</h2>
+      <div class="info-bullets" id="infoBullets"></div>
+      <div class="info-note" id="infoNote"></div>
+    </div>
+    <button class="btn btn-primary" onclick="continueAfterInfo()">다음 질문 이어가기</button>
+  </section>
+
+  <!-- SCREEN 3: RESULT -->
+  <section class="screen" id="screen-result">
+    <div class="type-card" id="typeCard">
+      <div class="type-eyebrow">나의 청소년지도사 유형은</div>
+      <div class="type-name" id="typeName">유형 이름</div>
+      <p class="type-desc" id="typeDesc">유형 설명</p>
+    </div>
+
+    <div class="section-title">🐢 나를 닮은 행운거북이 4마리</div>
+    <div class="section-sub">아래 4가지 색깔의 거북이가 나와 함께해요.</div>
+    <div class="turtle-grid" id="revealGrid"></div>
+
+    <div class="kakao-box">
+      <div class="kt">채널 추가하면 거북이 2마리 더!</div>
+      <div class="kd">센터 카카오톡 채널을 추가하면, 부스 현장에서 원하는 거북이 색깔 2가지를 직접 골라서 받을 수 있어요.</div>
+      <div class="stack">
+        <button class="btn btn-kakao" onclick="openKakao()">💬 카카오톡 채널 추가하러 가기</button>
+        <button class="btn btn-outline" id="confirmBtn" onclick="completeChannelAdd()" disabled>채널 추가 완료했어요</button>
+      </div>
+    </div>
+
+    <div class="turtle-grid" id="lockedGrid" style="margin-top:12px;"></div>
+  </section>
+
+  <!-- SCREEN 4: FINAL -->
+  <section class="screen" id="screen-final">
+    <h2>🎉 오늘의 행운거북이!</h2>
+    <p class="lead">테스트 결과로 만난 거북이 4마리예요. 채널 추가 선물 2마리는 부스에서 원하는 색으로 골라가세요.</p>
+    <div class="final-grid" id="finalGrid"></div>
+
+    <div class="staff-note">
+      📸 이 결과 화면과 함께, <strong>카카오톡에서 채널이 추가된 화면(채팅 목록 또는 채널 홈)</strong>도 스태프에게 보여주세요. 확인 후 결과 거북이 4마리와 채널 추가 선물 거북이 2마리(색깔 자유 선택)를 받아가실 수 있어요!
+    </div>
+
+    <div class="stack" style="margin-top:20px;">
+      <button class="btn btn-ghost" onclick="restart()">처음부터 다시하기</button>
+    </div>
+  </section>
+
+
+  <div class="footer-space"></div>
+</div>
+
+<script>
+/* =========================================================
+   ⚠️ 담당자 설정: 카카오톡 채널 추가 링크를 아래에 넣어주세요.
+   예) "https://pf.kakao.com/_xxxxxx/friend"
+========================================================= */
+const KAKAO_CHANNEL_URL = "http://pf.kakao.com/_mxdNZxd";
+
+/* =========================================================
+   ⚠️ 담당자 설정: 구글 시트 기록용 Apps Script 배포 URL을 넣어주세요.
+   (Apps Script > 배포 > 새 배포 > 웹 앱 에서 발급되는 .../exec 주소)
+   이 사이트를 GitHub Pages 등 Claude 아티팩트 바깥에서 호스팅할 때만 정상 작동해요.
+   비워두면 기록 없이 정상적으로 계속 동작해요.
+========================================================= */
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbztjDpZlgyHwM8bQyXo2K4H8Lr7kNO7Qv8RzuuZQqp-gnYqk2-2iX94-Ry7mkB7oNjC/exec";
+
+const TURTLES = {
+  green:  { label:"그린 거북이",  meaning:"성장", desc:"가능성을 믿고 함께 자라는 마음", color:"var(--green)", soft:"var(--green-soft)" },
+  red:    { label:"레드 거북이",  meaning:"열정", desc:"뜨거운 에너지와 도전정신", color:"var(--red)", soft:"var(--red-soft)" },
+  pink:   { label:"핑크 거북이",  meaning:"공감", desc:"마음을 잇는 따뜻한 소통력", color:"var(--pink)", soft:"var(--pink-soft)" },
+  yellow: { label:"옐로우 거북이", meaning:"긍정", desc:"밝은 에너지와 반짝이는 창의력", color:"var(--yellow)", soft:"var(--yellow-soft)" },
+  brown:  { label:"브라운 거북이", meaning:"신뢰", desc:"든든하고 안정적인 포용력", color:"var(--brown)", soft:"var(--brown-soft)" },
+  blue:   { label:"블루 거북이",  meaning:"통찰", desc:"차분함 속에 담긴 깊은 지혜", color:"var(--blue)", soft:"var(--blue-soft)" },
+};
+
+const TYPES = {
+  green:  { name:"성장 서포터형",   desc:"청소년의 가능성을 믿고, 그 속도에 맞춰 함께 걸어가는 동반자예요. 작은 변화도 놓치지 않고 성장의 순간을 함께 기뻐해요." },
+  red:    { name:"에너지 리더형",   desc:"열정과 추진력으로 청소년들을 이끄는 리더예요. 망설임보다 행동이 먼저, 활동의 분위기를 뜨겁게 만들어요." },
+  pink:   { name:"마음 소통러형",   desc:"공감과 소통으로 마음을 잇는 다정한 지도사예요. 청소년의 이야기에 진심으로 귀 기울일 줄 알아요." },
+  yellow: { name:"긍정 아이콘형",   desc:"밝은 에너지로 분위기를 살리는 인싸 지도사예요. 어디서든 웃음과 아이디어가 끊이지 않아요." },
+  brown:  { name:"든든한 울타리형", desc:"안정감과 포용력으로 감싸주는 든든한 어른이에요. 묵묵하지만 확실하게 곁을 지켜줘요." },
+  blue:   { name:"신뢰의 등대형",   desc:"차분하고 깊은 통찰로 방향을 제시하는 리더예요. 흔들리는 순간에도 중심을 잡아줘요." },
+};
+
+const QUESTIONS = [
+  { q:"새로운 프로그램을 기획할 때 나는?",
+    a:{ text:"청소년들의 의견을 먼저 듣고 반영한다", colors:["pink","brown"] },
+    b:{ text:"트렌드를 조사해서 새롭고 신선한 활동을 만든다", colors:["yellow","green"] } },
+  { q:"청소년과의 첫 만남, 나의 모습은?",
+    a:{ text:"먼저 다가가 밝게 인사하고 이름을 불러준다", colors:["yellow","red"] },
+    b:{ text:"조용히 지켜보며 자연스러운 타이밍을 기다린다", colors:["blue","brown"] } },
+  { q:"활동 중 예상 못한 문제가 생기면?",
+    a:{ text:"일단 부딪히며 상황을 헤쳐나간다", colors:["red","green"] },
+    b:{ text:"침착하게 원인을 분석하고 해결책을 찾는다", colors:["blue","brown"] } },
+  { q:"청소년이 고민을 털어놓을 때 나는?",
+    a:{ text:"진심으로 공감하며 마음을 함께 나눈다", colors:["pink","blue"] },
+    b:{ text:"실질적으로 도움이 될 방법을 같이 찾는다", colors:["brown","green"] } },
+  { q:"팀 프로젝트를 진행할 때 나는?",
+    a:{ text:"분위기를 살리고 팀에 에너지를 불어넣는다", colors:["red","yellow"] },
+    b:{ text:"맡은 역할을 묵묵히 책임감 있게 해낸다", colors:["brown","blue"] } },
+  { q:"나에게 청소년 지도란?",
+    a:{ text:"가능성을 믿고 성장을 돕는 것", colors:["green","pink"] },
+    b:{ text:"든든한 울타리가 되어주는 것", colors:["brown","blue"] } },
+  { q:"활동을 마친 후 가장 뿌듯한 순간은?",
+    a:{ text:"청소년들이 즐거워하고 크게 웃을 때", colors:["yellow","pink"] },
+    b:{ text:"청소년들이 한 뼘 성장한 게 보일 때", colors:["green","blue"] } },
+  { q:"나를 색깔로 표현한다면?",
+    a:{ text:"열정 가득한 강렬한 색", colors:["red","yellow"] },
+    b:{ text:"은은하고 편안한 색", colors:["brown","pink"] } },
+];
+
+const INFO_SCREENS = [
+  { afterQuestion:2, icon:"🎓", tag:"🎓 진로 꿀팁", title:"청소년지도사가 되려면?",
+    bullets:[
+      "청소년지도사는 청소년의 다양한 활동과 프로그램을 지도·지원하는 국가자격이에요",
+      "2026년에는 1급·2급·3급으로 운영되며, 학력과 전공과목 이수 여부 등에 따라 응시자격이 달라져요",
+      "관련 전공과목을 모두 이수하면 필기시험이 면제될 수 있어요",
+      "자격검정에 합격한 후 청소년지도사 연수과정을 이수하면 자격을 취득할 수 있어요",
+      "2027년부터는 3급이 폐지되고 1·2급 체계로 변경되며, 2급에 청소년기관 현장실습 130시간 이상이 도입되는 등 제도가 달라져요",
+    ],
+    note:[
+      "📌 자세한 응시자격·시험방법·필요과목은 Q-Net 청소년지도사와 한국청소년활동진흥원(KYWA)에서 확인하세요.",
+      "※ 자격제도는 변경될 수 있으므로 최신 공고를 확인해주세요.",
+    ] },
+  { afterQuestion:4, icon:"🏢", tag:"🏢 진로 꿀팁", title:"청소년지도사는 어디서 일할까?",
+    bullets:[
+      "청소년수련관, 청소년문화의집, 청소년수련원 등 청소년수련시설에서 청소년 활동을 기획하고 운영해요",
+      "청소년단체, 청소년 관련 기관·시설, 지자체의 청소년 관련 기관 등에서도 활동할 수 있어요",
+      "진로체험, 동아리, 문화·예술, 캠프, 축제, 봉사활동 등 청소년이 직접 참여하는 다양한 활동과 프로그램을 기획·운영하고 지원해요",
+    ],
+    note:["※ 근무기관과 담당 업무에 따라 하는 일이 달라질 수 있어요."] },
+  { afterQuestion:6, icon:"💡", tag:"💡 진로 꿀팁", title:"이런 사람에게 잘 맞아요",
+    bullets:[
+      "청소년과 소통하고 함께 활동하는 것을 좋아하는 사람",
+      "책임감을 가지고 맡은 일을 끝까지 해내는 사람",
+      "예상하지 못한 상황에도 침착하게 대응할 수 있는 사람",
+      "새로운 활동과 프로그램을 기획하고 실행하는 것을 좋아하는 사람",
+      "청소년의 생각과 가능성을 존중하고 성장을 응원하는 사람",
+    ],
+    note:[] },
+];
+const shownInfoBreaks = new Set();
+function escapeHtml(s){
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+let current = 0;
+let scores = { green:0, red:0, pink:0, yellow:0, brown:0, blue:0 };
+let sortedColors = [];
+
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function startQuiz(){
+  current = 0;
+  scores = { green:0, red:0, pink:0, yellow:0, brown:0, blue:0 };
+  shownInfoBreaks.clear();
+  document.getElementById('confirmBtn').disabled = true;
+  document.getElementById('confirmBtn').textContent = '채널 추가 완료했어요';
+  show('screen-quiz');
+  renderQuestion();
+}
+
+function renderQuestion(){
+  const item = QUESTIONS[current];
+  document.getElementById('qNum').textContent = 'Q' + (current+1);
+  document.getElementById('qText').textContent = item.q;
+  document.getElementById('progressLabel').textContent = (current+1) + ' / ' + QUESTIONS.length;
+  document.getElementById('progressFill').style.width = ((current) / QUESTIONS.length * 100) + '%';
+
+  const list = document.getElementById('optionList');
+  list.innerHTML = '';
+  ['a','b'].forEach(key=>{
+    const opt = item[key];
+    const btn = document.createElement('button');
+    btn.className = 'opt';
+    btn.textContent = opt.text;
+    btn.onclick = ()=> answer(opt.colors);
+    list.appendChild(btn);
+  });
+}
+
+function answer(colors){
+  colors.forEach(c => scores[c] += 1);
+  current += 1;
+
+  const info = INFO_SCREENS.find(i => i.afterQuestion === current && !shownInfoBreaks.has(i.afterQuestion));
+  if(info){
+    shownInfoBreaks.add(info.afterQuestion);
+    renderInfoScreen(info);
+    return;
+  }
+  proceedAfterInfo();
+}
+
+function renderInfoScreen(info){
+  document.getElementById('infoTag').textContent = info.tag;
+  document.getElementById('infoIcon').textContent = info.icon;
+  document.getElementById('infoTitle').textContent = info.title;
+  const list = document.getElementById('infoBullets');
+  list.innerHTML = '';
+  info.bullets.forEach(b=>{
+    const d = document.createElement('div');
+    d.className = 'info-bullet';
+    d.textContent = b;
+    list.appendChild(d);
+  });
+  const noteEl = document.getElementById('infoNote');
+  const notes = Array.isArray(info.note) ? info.note : (info.note ? [info.note] : []);
+  noteEl.innerHTML = notes.map(escapeHtml).join('<br><br>');
+  show('screen-info');
+}
+
+function continueAfterInfo(){
+  proceedAfterInfo();
+}
+
+function proceedAfterInfo(){
+  if(current >= QUESTIONS.length){
+    finishQuiz();
+  } else {
+    show('screen-quiz');
+    renderQuestion();
+  }
+}
+
+function finishQuiz(){
+  sortedColors = Object.keys(scores)
+    .map(k => ({ key:k, score: scores[k] + Math.random()*0.01 }))
+    .sort((a,b)=> b.score - a.score)
+    .map(o=>o.key);
+
+  const primary = sortedColors[0];
+  const type = TYPES[primary];
+  const typeCard = document.getElementById('typeCard');
+  typeCard.style.setProperty('--type-color', TURTLES[primary].color);
+  document.getElementById('typeName').textContent = type.name;
+  document.getElementById('typeDesc').textContent = type.desc;
+
+  const revealGrid = document.getElementById('revealGrid');
+  revealGrid.innerHTML = '';
+  sortedColors.slice(0,4).forEach((key, i)=>{
+    revealGrid.appendChild(turtleCard(key, i*0.12));
+  });
+
+  const lockedGrid = document.getElementById('lockedGrid');
+  lockedGrid.innerHTML = '';
+  for(let i=0;i<2;i++){
+    const d = document.createElement('div');
+    d.className = 'locked-card';
+    d.innerHTML = '<div class="lock">🔒</div><div class="lt">???' + ' 거북이</div>';
+    lockedGrid.appendChild(d);
+  }
+
+  show('screen-result');
+}
+
+function turtleCard(key, delay){
+  const t = TURTLES[key];
+  const d = document.createElement('div');
+  d.className = 'turtle-card';
+  d.style.animationDelay = delay + 's';
+  d.innerHTML =
+    '<div class="tv">' + turtleSvg(t.color) + '</div>' +
+    '<div class="tname">' + t.label + '</div>' +
+    '<div class="tmeaning" style="color:' + t.color + '">#' + t.meaning + '</div>' +
+    '<div class="tdesc">' + t.desc + '</div>';
+  return d;
+}
+
+function turtleSvg(colorVar){
+  return '<svg viewBox="0 0 64 64" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">' +
+    '<ellipse cx="32" cy="36" rx="22" ry="18" fill="' + colorVar + '" opacity="0.22"/>' +
+    '<ellipse cx="32" cy="36" rx="18" ry="15" fill="' + colorVar + '"/>' +
+    '<polygon points="32,25 40,31 37,40 27,40 24,31" fill="none" stroke="#ffffff" stroke-width="1.4" opacity="0.85"/>' +
+    '<polygon points="20,30 26,34 24,41 17,40 15,33" fill="none" stroke="#ffffff" stroke-width="1.2" opacity="0.6"/>' +
+    '<polygon points="44,30 50,33 48,40 41,41 39,34" fill="none" stroke="#ffffff" stroke-width="1.2" opacity="0.6"/>' +
+    '<circle cx="14" cy="22" r="6" fill="' + colorVar + '"/>' +
+    '<ellipse cx="10" cy="46" rx="4.5" ry="3.2" fill="' + colorVar + '"/>' +
+    '<ellipse cx="20" cy="52" rx="4.5" ry="3.2" fill="' + colorVar + '"/>' +
+    '<ellipse cx="44" cy="52" rx="4.5" ry="3.2" fill="' + colorVar + '"/>' +
+    '<ellipse cx="54" cy="46" rx="4.5" ry="3.2" fill="' + colorVar + '"/>' +
+    '</svg>';
+}
+
+function logCompletion(){
+  if(!APPS_SCRIPT_URL) return;
+  try{
+    const params = new URLSearchParams({
+      type: TYPES[sortedColors[0]].name,
+      color1: TURTLES[sortedColors[0]].label,
+      color2: TURTLES[sortedColors[1]].label,
+      color3: TURTLES[sortedColors[2]].label,
+      color4: TURTLES[sortedColors[3]].label,
+      channelAdded: 'Y',
+    });
+    fetch(APPS_SCRIPT_URL, { method:'POST', mode:'no-cors', body: params }).catch(()=>{});
+  }catch(e){ /* logging must never block the participant's flow */ }
+}
+
+function openKakao(){
+  window.open(KAKAO_CHANNEL_URL, '_blank');
+  document.getElementById('confirmBtn').disabled = false;
+}
+
+function completeChannelAdd(){
+  document.getElementById('confirmBtn').disabled = true;
+  document.getElementById('confirmBtn').textContent = '채널 추가 완료 ✓';
+
+  const lockedGrid = document.getElementById('lockedGrid');
+  lockedGrid.innerHTML = '';
+  const d = document.createElement('div');
+  d.className = 'locked-card';
+  d.style.gridColumn = '1 / -1';
+  d.innerHTML = '<div class="lock">🎁</div><div class="lt">선물 거북이 2마리는 부스에서 원하는 색으로 골라가세요! (카카오톡 채널 추가 화면을 스태프에게 보여주세요)</div>';
+  lockedGrid.appendChild(d);
+
+  burstConfetti();
+  logCompletion();
+
+  setTimeout(()=>{
+    const finalGrid = document.getElementById('finalGrid');
+    finalGrid.innerHTML = '';
+    sortedColors.slice(0,4).forEach((key,i)=>{
+      finalGrid.appendChild(turtleCard(key, i*0.08));
+    });
+    show('screen-final');
+  }, 1400);
+}
+
+function burstConfetti(){
+  const layer = document.getElementById('confettiLayer');
+  const colors = ['#3E9C6B','#E15B3F','#EC5F94','#E9B23C','#8B5E3C','#3E7CB8'];
+  for(let i=0;i<36;i++){
+    const dot = document.createElement('div');
+    dot.className = 'confetti-dot';
+    dot.style.left = (Math.random()*100) + 'vw';
+    dot.style.background = colors[Math.floor(Math.random()*colors.length)];
+    dot.style.animationDuration = (2.2 + Math.random()*1.4) + 's';
+    dot.style.opacity = 0.85;
+    layer.appendChild(dot);
+    setTimeout(()=>dot.remove(), 4000);
+  }
+}
+
+function restart(){
+  show('screen-intro');
+}
+</script>
+</body>
+</html>
